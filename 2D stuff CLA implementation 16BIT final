@@ -1,0 +1,123 @@
+.include "C:\Users\Kevin\Desktop\50002\nominal.jsim"
+.include "C:\Users\Kevin\Desktop\50002\stdcell.jsim"
+.include "C:\Users\Kevin\Desktop\50002\2dcheckoff_100ns.jsim"
+
+
+.subckt or a b z
+Xnor1 a b 1 nor2
+Xinv4 1 z inverter
+.ends
+
+.subckt xor a b z 
+Xnand1_xor a b 1 nand2
+Xnand2_xor a 1 2 nand2
+Xnand3_xor b 1 3 nand2
+Xnand4_xor 2 3 z nand2
+.ends
+
+.subckt and_3 a b c z
+Xand12312 a b c 1 nand3
+Xinv2 1 z inverter
+.ends
+
+
+.subckt and a b z 
+Xnand5_xor a b 1 nand2
+Xinv 1 z inverter
+.ends
+
+
+.subckt blockX Ai Bi Ci Gi Pi Si  
+Xand1 Ai Bi Gi and 
+Xor1 Ai Bi Pi or 
+Xxor1 Ai Bi 1 xor 
+Xxor2 1 Ci Si xor 
+.ends 
+ 
+.subckt blockY gh ph gl pl clin clout ch ghl phl 
+Xand1 ph gl 1 and 
+Xor1 gh 1 ghl or 
+Xand2 ph pl phl and 
+Xand3 clin pl 2 and 
+Xor2 2 gl ch or 
+.connect clin clout 
+.ends 
+ 
+.subckt adderLink g p cin z 
+X_and1 p cin 1 and 
+X_or1 g 1 z or 
+.ends    
+ 
+
+.subckt 16bitmux A[15:0] B[15:0] S[15:0] ci cout
+
+Xbitadder_top A[15:0] B[15:0] K[15:0] 0 1 adder16
+Xbitadder_bottom A[15:0] B[15:0] I[15:0] vdd 2 adder16
+Xsmallmuxes ci#16 K[0:15] I[0:15] S[0:15] mux2
+XBigMux1 ci 1 2 103 mux2
+.connect 103 cout 
+
+.ends
+
+.subckt zchecker S[31:0] z
+Xnor4 S[0:7] S[8:15] S[16:23] S[24:31] b[1:8] nor4
+Xnand b[1:2] b[3:4] b[5:6] b[7:8] c[1:2] nand4
+Xnor2 c1 c2 z nor2
+.ends
+
+
+.subckt adder16 A[15:0] B[15:0] S[15:0] Cin Cout 
+X_blockX0 A0 B0 C0 G0 P0 S[0] blockX 
+X_blockX1 A1 B1 C1 G1 P1 S[1] blockX 
+X_blockX2 A2 B2 C2 G2 P2 S[2] blockX 
+X_blockX3 A3 B3 C3 G3 P3 S[3] blockX 
+X_blockX4 A4 B4 C4 G4 P4 S[4] blockX 
+X_blockX5 A5 B5 C5 G5 P5 S[5] blockX 
+X_blockX6 A6 B6 C6 G6 P6 S[6] blockX 
+X_blockX7 A7 B7 C7 G7 P7 S[7] blockX 
+X_blockX8 A8 B8 C8 G8 P8 S[8] blockX 
+X_blockX9 A9 B9 C9 G9 P9 S[9] blockX 
+X_blockX10 A10 B10 C10 G10 P10 S[10] blockX 
+X_blockX11 A11 B11 C11 G11 P11 S[11] blockX 
+X_blockX12 A12 B12 C12 G12 P12 S[12] blockX 
+X_blockX13 A13 B13 C13 G13 P13 S[13] blockX 
+X_blockX14 A14 B14 C14 G14 P14 S[14] blockX 
+X_blockX15 A15 B15 C15 G15 P15 S[15] blockX 
+ 
+X_blockY0 G7b P7b G3b P3b C7c C3b C7b G7c P7c blockY   
+X_blockY1 G7a P7a G5a P5a C7b C5a C7a G7b P7b blockY 
+X_blockY2 G7 P7 G6 P6 C7a C6 C7 G7a P7a blockY 
+X_blockY3 G5 P5 G4 P4 C5a C4 C5 G5a P5a blockY 
+X_blockY4 G3a P3a G1a P1a C3b C1a C3a G3b P3b blockY 
+X_blockY5 G3 P3 G2 P2 C3a C2 C3 G3a P3a blockY   
+X_blockY6 G1 P1 G0 P0 C1a C0 C1 G1a P1a blockY 
+X_blockY7 G15c P15c G7c P7c Cin C7c C15c G15d P15d blockY 
+X_blockY8 G15b P15b G11b P11b C15c C11b C15b G15c P15c blockY 
+X_blockY9 G15a P15a G13a P13a C15b C13a C15a G15b P15b blockY 
+X_blockY10 G15 P15 G14 P14 C15a C14 C15 G15a P15a blockY 
+X_blockY11 G13 P13 G12 P12 C13a C12 C13 G13a P13a blockY 
+X_blockY12 G11a P11a G9a P9a C11b C9a C11a G11b P11b blockY 
+X_blockY13 G11 P11 G10 P10 C11a C10 C11 G11a P11a blockY 
+X_blockY14 G9 P9 G8 P8 C9a C8 C9 G9a P9a blockY 
+   
+X_adderLink G15 P15 C15 Cout adderLink 
+.ends
+
+
+.subckt adder32 op0 A[31:0] B[31:0] S[31:0] z v n 
+X_xor_b B[31:0] op0#32 xb[31:0] xor 
+ 
+X_16bitadder1   A[15:0] xb[15:0] S[15:0] op0 C1 adder16 
+Xbigmux1 A[31:16] xb[31:16] S[31:16] C1 C2 16bitmux
+
+Xnots31 S31 nots31 inverter  
+Xnotxb31 xb31 notxb31 inverter 
+Xnota31 A31 nota31 inverter  
+Xnegnegpos A31 xb31 nots31 negnegpos and_3 
+Xposposneg nota31 notxb31 S31 posposneg and_3 
+Xv_unit posposneg negnegpos v or 
+
+.connect n S31 
+Xzchecker S[31:0] z zchecker 
+.ends
+
