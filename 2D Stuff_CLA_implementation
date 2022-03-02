@@ -1,0 +1,201 @@
+.include "C:\Users\Kevin\Desktop\50002\nominal.jsim"
+.include "C:\Users\Kevin\Desktop\50002\stdcell.jsim"
+.include "C:\Users\Kevin\Desktop\50002\2dcheckoff_6ns.jsim"
+
+.subckt or2a a b z
+Xnor1 a b 1 nor2
+Xinv4 1 z inverter
+.ends
+
+.subckt or3a a b c z
+Xnor2 a b c 1 nor3
+Xinv5 1 z inverter
+.ends
+
+.subckt or4a a b c d z
+Xnor3 a b c d 1 nor4
+Xinv6 1 z inverter
+.ends
+
+.subckt xor2a a b z 
+Xnand1_xor a b 1 nand2
+Xnand2_xor a 1 2 nand2
+Xnand3_xor b 1 3 nand2
+Xnand4_xor 2 3 z nand2
+.ends
+
+
+.subckt and2a a b z 
+Xnand5_xor a b 1 nand2
+Xinv 1 z inverter
+.ends
+
+.subckt and3a a b c z
+Xand12312 a b c 1 nand3
+Xinv2 1 z inverter
+.ends
+
+.subckt and4a a b c d z
+Xand343 a b c d 1 nand4
+Xinv3 1 z inverter
+.ends
+
+
+.subckt or5 a b c d e z
+Xinv1 a 1 inverter
+Xinv2 b 2 inverter 
+Xinv3 c 3 inverter 
+Xinv4 d 4 inverter 
+Xinv5 e 5 inverter
+
+Xnand1 1 2 6 nand2
+Xinv6 6 7 inverter 
+
+Xnand2 3 4 8 nand2 
+Xinv7 8 9 inverter
+
+Xfinal 5 9 7 z nand3
+
+.ends
+
+
+.subckt and5a a b c d e z
+
+Xand1 a b 1 and2a
+Xand2 1 c 2 and2a 
+Xand3 2 d 3 and2a 
+Xand4 e 3 z and2a
+
+.ends
+
+
+.subckt adder4 ci A[3:0] B[3:0] S[4:1] cout
+
+Xcininv ci 1 inverter
+
+*inputs 
+Xnor1 A0 B0 2 nor2
+Xnand2 A0 B0 3 nand2
+
+Xnor3 A1 B1 4 nor2
+Xnand4 A1 B1 5 nand2
+
+Xnor5 A2 B2 6 nor2
+Xnand6 A2 B2 7 nand2
+
+Xnor7 A3 B3 8 nor2
+Xnand8 A3 B3 9 nand2
+*inputs end 
+
+*circuit for S1
+
+Xinvbefore_and1 2 10 inverter
+Xand1 10 3 11 and2a
+Xxor1 11 ci S1 xor2a
+
+*S1 circuit end
+
+
+*circuit for S2
+
+Xand2 1 3 12 and2a
+Xnor112 12 2 13 nor2
+
+Xinvbeforeand3 4 14 inverter
+Xand3 14 5 16 and2a
+Xxor2 13 16 S2 xor2a
+
+*S2 circuit end
+
+
+*circuit for S3
+
+Xand3_3input 1 3 5 17 and3a
+Xand5 5 2 18 and2a 
+Xnor3input 17 18 4 19 nor3
+Xinvbefore6 6 20 inverter
+Xand6 20 7 21 and2a 
+Xxor3 19 21 S3 xor2a 
+
+*S3 circuit ends
+
+
+*circuit for S4
+
+Xand7 1 3 5 7 22 and4a 
+Xand8 5 7 2 23 and3a
+Xand9 7 4 24 and2a 
+Xnor4_4input 22 23 24 6 25 nor4
+
+Xinvbeforeand10 8 26 inverter 
+Xand10 26 9 27 and2a 
+Xxor4 25 27 S4 xor2a
+
+*S4 circuit ends 
+
+
+*circuit for cout
+
+Xand5_5input 1 3 5 7 9 28 and5a 
+Xand4_4input 5 7 9 2 29 and4a 
+Xand3_3input12 7 9 4 30 and3a 
+Xand2_2input 9 6 31 and2a 
+
+Xnor5lol 28 29 30 31 8 100 or5
+Xinv 100 cout inverter  
+
+*cout circuit ends
+
+.ends
+
+
+.subckt and_3 a b c z
+Xid1 a b c 1 nand3
+Xid2 1 z inverter
+.ends
+
+
+.subckt zchecker S[31:0] z
+Xlayer_1 S[31:16] S[15:0] layer_1[15:0] or2a
+Xlayer_2 layer_1[15:8] layer_1[7:0] layer_2[7:0] or2a
+Xlayer_3 layer_2[7:4] layer_2[3:0] layer_3[3:0] or2a
+Xlayer_4 layer_3[3:2] layer_3[1:0] layer_4[1:0] or2a
+Xz_inv layer_40 layer_41 z nor2
+.ends
+
+
+
+*.subckt adder4 ci A[3:0] B[3:0] S[3:0] cout
+
+.subckt adder32 op0 A[31:0] B[31:0] S[31:0] z v n
+
+
+xor_b B[31:0] op0#32 xb[31:0] xor2a
+
+Xadder1 op0 A[3:0] xb[3:0] S[3:0] 1 adder4
+Xadder2 1  A[7:4] xb[7:4] S[7:4] 2 adder4
+Xadder3 2  A[11:8] xb[11:8] S[11:8] 3 adder4
+Xadder4 3  A[15:12] xb[15:12] S[15:12] 4 adder4
+Xadder5 4  A[19:16] xb[19:16] S[19:16] 5 adder4
+Xadder6 5  A[23:20] xb[23:20] S[23:20] 6 adder4
+Xadder7 6  A[27:24] xb[27:24] S[27:24] 7 adder4
+Xadder8 7  A[31:28] xb[31:28] S[31:28] 8 adder4
+
+.connect n S31
+Xzchecker S[31:0] z zchecker
+
+Xnots31 S31 nots31 inverter 
+Xnotxb31 xb31 notxb31 inverter
+Xnota31 A31 nota31 inverter 
+Xnegnegpos A31 xb31 nots31 negnegpos and_3
+Xposposneg nota31 notxb31 S31 posposneg and_3
+Xv_unit posposneg negnegpos v or2a
+
+.ends 
+
+
+
+
+
+
+
