@@ -1,0 +1,61 @@
+BC1.1
+XB_0:=ODD(ALUFN0,B0);
+S0:=ODD(A0,XB_0,ALUFN0);
+Co_0:=OR(AND(ODD(A0,XB_0),ALUFN0),AND(A0,XB_0));
+
+XB_1:=ODD(ALUFN0,B1);
+S1:=ODD(A1,XB_1,Co_0);
+Co_1:=OR(AND(ODD(A1,XB_1),Co_0),AND(A1,XB_1));
+
+XB_2:=ODD(ALUFN0,B2);
+S2:=ODD(A2,XB_2,Co_1);
+Co_2:=OR(AND(ODD(A2,XB_2),Co_1),AND(A2,XB_2));
+
+XB_3:=ODD(ALUFN0, B3);
+S3:=ODD(A3,XB_3,Co_2);
+Co_3:=OR(AND(ODD(A3,XB_3),Co_2),AND(A3,XB_3));
+
+XB_4:=ODD(ALUFN0,B4);
+S4:=ODD(A4,XB_4,Co_3);
+Co_4:=OR(AND(ODD(A4,XB_4),Co_3),AND(A4,XB_4));
+
+XB_5:=ODD(ALUFN0,B5);
+S5:=ODD(A5,XB_5,Co_4);
+Co_5:=OR(AND(ODD(A5,XB_5),Co_4),AND(A5,XB_5));
+
+XB_6:=ODD(ALUFN0, B6);
+S6:=ODD(A6,XB_6,Co_5);
+Co_6:=OR(AND(ODD(A6,XB_6),Co_5),AND(A6,XB_6));
+
+XB_7:=ODD(ALUFN0,B7);
+S7 := ODD(A7, XB_7, Co_6);
+
+G0 := A0 & XB_0;
+P0 := A0 | XB_0; 
+ 
+G1 := A1 & XB_1;
+P1 := A1 | XB_1;
+
+G2 := A2 & XB_2; 
+P2 := A2 | XB_2; 
+
+G3 := A3 & XB_3;
+P3 := A3 | XB_3;
+
+G4 := A4 & XB_4; 
+P4 := A4 | XB_4;
+
+G5 := A5 & XB_5;
+P5 := A5 | XB_5;
+
+G6 := A6 & XB_6; 
+P6 := A6 | XB_6; 
+
+G7 := A7 & XB_7;
+P7 := A7 | XB_7;
+
+C3 := G2 | (P2 & G1) | (P2 & P1 & G0) |(P2 & P1 & P0 & ALUFN0);
+C7 := G6 | (P6 & (G5 | P5 & ( G4 | P4 & (G3 | (P3 & C3)))));
+S7_parallel_adder := (A7^B7)^C7;
+final_output := ODD(S7, S7_parallel_adder);
+ASSIGN final_output;
